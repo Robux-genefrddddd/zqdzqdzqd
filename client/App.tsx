@@ -114,6 +114,16 @@ const App = () => (
               }
             />
             <Route
+              path="/purchases"
+              element={
+                <BanGuard>
+                  <Layout>
+                    <MyPurchases />
+                  </Layout>
+                </BanGuard>
+              }
+            />
+            <Route
               path="/asset/:id"
               element={
                 <BanGuard>
