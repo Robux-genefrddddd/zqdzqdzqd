@@ -36,6 +36,7 @@ import {
 } from "@/lib/assetService";
 import { getUserProfile } from "@/lib/auth";
 import { useAuth } from "@/contexts/AuthContext";
+import { hasUserPurchased } from "@/lib/paymentService";
 import {
   getAssetReviews,
   hasUserReviewedAsset,
@@ -80,6 +81,7 @@ export default function AssetDetail() {
   const [deletingAsset, setDeletingAsset] = useState(false);
   const [showFilePreview, setShowFilePreview] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [hasPurchased, setHasPurchased] = useState(false);
 
   useEffect(() => {
     const fetchAssetDetails = async () => {
@@ -108,10 +110,18 @@ export default function AssetDetail() {
         if (user) {
           const existing = await getUserReviewForAsset(id, user.uid);
           setUserReview(existing);
+          if (existing) {
+            setRating(existing.rating);
+            setReviewMessage(existing.message);
+          }
 
           // Check if favorited
           const fav = await isFavorited(user.uid, id);
           setIsFav(fav);
+
+          // Check if user has purchased the asset
+          const purchased = await hasUserPurchased(user.uid, id);
+          setHasPurchased(purchased);
         }
       } catch (err) {
         console.error("Error loading asset:", err);
@@ -181,10 +191,13 @@ export default function AssetDetail() {
 
         const newUserReview = await getUserReviewForAsset(id, user.uid);
         setUserReview(newUserReview);
-      }
 
-      setReviewMessage("");
-      setRating(5);
+        // Reload asset to get updated rating
+        const updatedAsset = await getAsset(id);
+        if (updatedAsset) {
+          setAsset(updatedAsset);
+        }
+      }
     } catch (error: any) {
       console.error("Error submitting review:", error);
       toast.error(error.message || "Failed to submit review");
@@ -275,27 +288,42 @@ export default function AssetDetail() {
   const handleDownloadAsset = () => {
     if (!asset) return;
 
-    // Check if asset is paid and user is not the author
+    // Check if asset is paid and user hasn't purchased it
     const isPaidAsset = asset.price && asset.price > 0;
     const isAuthor = user && user.uid === asset.authorId;
+    const canDownload = isAuthor || !isPaidAsset || hasPurchased;
 
-    if (isPaidAsset && !isAuthor) {
-      // Show purchase modal for paid assets
+    if (isPaidAsset && !isAuthor && !hasPurchased) {
+      // Show purchase modal for paid assets not purchased
       if (!user) {
         toast.error("Please sign in to purchase this asset");
         navigate("/login");
         return;
       }
       setShowPurchaseModal(true);
-    } else {
-      // Show file preview for free assets or author's own assets
+    } else if (canDownload) {
+      // Show file preview for free assets, author's own assets, or purchased assets
       setShowFilePreview(true);
+    } else {
+      toast.error("Unable to download asset");
     }
   };
 
   const handleDownloadSelectedFiles = async (selectedFiles: AssetFile[]) => {
     if (!asset || selectedFiles.length === 0) {
       toast.error("No files selected for download");
+      return;
+    }
+
+    // Security check: Verify user has access to download this asset
+    const isPaidAsset = asset.price && asset.price > 0;
+    const isAuthor = user && user.uid === asset.authorId;
+    const hasAccess = isAuthor || !isPaidAsset || hasPurchased;
+
+    if (!hasAccess) {
+      toast.error(
+        "You don't have access to download this asset. Please purchase it first.",
+      );
       return;
     }
 
@@ -486,26 +514,44 @@ export default function AssetDetail() {
               </div>
             </div>
 
-            {/* Primary Download Button */}
-            <button
-              onClick={handleDownloadAsset}
-              disabled={downloading || loading}
-              className="w-full py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-auto"
-            >
-              {asset.price &&
-              asset.price > 0 &&
-              user?.uid !== asset.authorId ? (
-                <>
-                  <Lock size={14} />
-                  Get Access
-                </>
-              ) : (
-                <>
-                  <FileDown size={14} />
-                  {downloading ? "Downloading..." : "Download"}
-                </>
-              )}
-            </button>
+            {/* Primary Download Button - Matches AssetCard styling */}
+            {(() => {
+              const isFree = !asset.price || asset.price === 0;
+              const isPaidAsset = asset.price && asset.price > 0;
+              const isAuthor = user?.uid === asset.authorId;
+              const userHasPurchased = hasPurchased;
+              const needsPayment =
+                isPaidAsset && !isAuthor && !userHasPurchased;
+
+              return (
+                <button
+                  onClick={handleDownloadAsset}
+                  disabled={downloading || loading}
+                  className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded font-medium transition-all duration-200 text-xs mt-auto ${
+                    isFree
+                      ? "bg-accent/10 text-accent border border-accent/20 hover:bg-accent/15 hover:border-accent/30"
+                      : "bg-primary text-primary-foreground hover:bg-primary/90 border border-primary"
+                  }`}
+                >
+                  {needsPayment ? (
+                    <>
+                      <Lock size={14} />
+                      Get Access
+                    </>
+                  ) : isFree ? (
+                    <>
+                      <Download size={14} />
+                      Download
+                    </>
+                  ) : (
+                    <>
+                      <FileDown size={14} />
+                      {downloading ? "Downloading..." : "Download"}
+                    </>
+                  )}
+                </button>
+              );
+            })()}
 
             {/* Creator Preview */}
             {authorProfile && (
@@ -779,7 +825,8 @@ export default function AssetDetail() {
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
         onSuccess={() => {
-          // After successful purchase, show file preview
+          // After successful purchase, mark as purchased and show file preview
+          setHasPurchased(true);
           setTimeout(() => {
             setShowFilePreview(true);
           }, 500);

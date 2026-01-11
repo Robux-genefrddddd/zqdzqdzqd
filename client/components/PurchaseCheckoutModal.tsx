@@ -157,15 +157,12 @@ export function PurchaseCheckoutModal({
               }
 
               const result = await response.json();
-              toast.success("Payment successful! Processing download...");
+              toast.success(
+                "Payment successful! You can now download the asset.",
+              );
 
               onSuccess(result.orderId);
               onClose();
-
-              // Redirect to order page after a short delay
-              setTimeout(() => {
-                window.location.href = `/order/${result.orderId}`;
-              }, 1000);
             } catch (err: any) {
               console.error("Payment error:", err);
               toast.error(err?.message || "Failed to process payment");
