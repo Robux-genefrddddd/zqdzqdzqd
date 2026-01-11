@@ -504,9 +504,13 @@ export default function AssetDetail() {
 
             {/* Primary Download Button */}
             {(() => {
-              const isPaidAsset = asset.price && asset.price > 0;
+              const isPaidAsset = asset.price !== null && asset.price !== undefined && asset.price > 0;
               const isAuthor = user?.uid === asset.authorId;
-              const needsPayment = isPaidAsset && !isAuthor && !hasPurchased;
+              const userHasPurchased = hasPurchased;
+              const needsPayment = isPaidAsset && !isAuthor && !userHasPurchased;
+
+              // Debug log
+              console.log('Button Logic:', { isPaidAsset, isAuthor, userHasPurchased, needsPayment, price: asset.price });
 
               return (
                 <button
@@ -517,7 +521,12 @@ export default function AssetDetail() {
                   {needsPayment ? (
                     <>
                       <Lock size={14} />
-                      Get Access (${asset.price})
+                      Get Access (${asset.price?.toFixed(2)})
+                    </>
+                  ) : isPaidAsset ? (
+                    <>
+                      <FileDown size={14} />
+                      {downloading ? "Downloading..." : "Download (Your Asset)"}
                     </>
                   ) : (
                     <>
