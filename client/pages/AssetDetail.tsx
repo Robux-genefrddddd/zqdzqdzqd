@@ -36,6 +36,7 @@ import {
 } from "@/lib/assetService";
 import { getUserProfile } from "@/lib/auth";
 import { useAuth } from "@/contexts/AuthContext";
+import { hasUserPurchased } from "@/lib/paymentService";
 import {
   getAssetReviews,
   hasUserReviewedAsset,
