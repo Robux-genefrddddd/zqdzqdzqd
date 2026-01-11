@@ -108,6 +108,10 @@ export default function AssetDetail() {
         if (user) {
           const existing = await getUserReviewForAsset(id, user.uid);
           setUserReview(existing);
+          if (existing) {
+            setRating(existing.rating);
+            setReviewMessage(existing.message);
+          }
 
           // Check if favorited
           const fav = await isFavorited(user.uid, id);
