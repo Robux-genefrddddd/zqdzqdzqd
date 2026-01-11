@@ -14,6 +14,7 @@ import { Loader } from "@/components/ui/loader";
 import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
 import AssetDetail from "./pages/AssetDetail";
+import MyPurchases from "./pages/MyPurchases";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
