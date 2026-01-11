@@ -227,11 +227,8 @@ export default function MyPurchases() {
           }
           isOpen={showPreview}
           onClose={() => setShowPreview(false)}
-          onDownload={async (selectedFiles) => {
+          onDownload={async (selectedFiles: AssetFile[]) => {
             // Handle download
-            const { forceDownloadFile, downloadAssetFile } =
-              await import("@/lib/fileService");
-
             for (const fileData of selectedFiles) {
               try {
                 const blob = await downloadAssetFile(
