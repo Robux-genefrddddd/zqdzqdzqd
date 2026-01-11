@@ -207,7 +207,19 @@ export async function updateReview(
 export async function deleteReview(reviewId: string): Promise<void> {
   try {
     const docRef = doc(db, REVIEWS_COLLECTION, reviewId);
+    const reviewDoc = await getDoc(docRef);
+
+    let assetId = "";
+    if (reviewDoc.exists()) {
+      assetId = reviewDoc.data().assetId;
+    }
+
     await deleteDoc(docRef);
+
+    // Recalculate asset rating
+    if (assetId) {
+      await recalculateAssetRating(assetId);
+    }
   } catch (error) {
     console.error("Error deleting review:", error);
     throw error;
