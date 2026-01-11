@@ -79,6 +79,7 @@ export default function AssetDetail() {
   const [isFav, setIsFav] = useState(false);
   const [deletingAsset, setDeletingAsset] = useState(false);
   const [showFilePreview, setShowFilePreview] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   useEffect(() => {
     const fetchAssetDetails = async () => {
