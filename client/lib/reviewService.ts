@@ -153,6 +153,9 @@ export async function createReview(
       createdAt: Timestamp.now(),
     });
 
+    // Recalculate asset rating
+    await recalculateAssetRating(assetId);
+
     return docRef.id;
   } catch (error) {
     console.error("Error creating review:", error);
