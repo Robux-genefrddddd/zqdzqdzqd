@@ -274,7 +274,23 @@ export default function AssetDetail() {
 
   const handleDownloadAsset = () => {
     if (!asset) return;
-    setShowFilePreview(true);
+
+    // Check if asset is paid and user is not the author
+    const isPaidAsset = asset.price && asset.price > 0;
+    const isAuthor = user && user.uid === asset.authorId;
+
+    if (isPaidAsset && !isAuthor) {
+      // Show purchase modal for paid assets
+      if (!user) {
+        toast.error("Please sign in to purchase this asset");
+        navigate("/login");
+        return;
+      }
+      setShowPurchaseModal(true);
+    } else {
+      // Show file preview for free assets or author's own assets
+      setShowFilePreview(true);
+    }
   };
 
   const handleDownloadSelectedFiles = async (selectedFiles: AssetFile[]) => {
