@@ -121,6 +121,7 @@ export default function AssetDetail() {
 
           // Check if user has purchased the asset
           const purchased = await hasUserPurchased(user.uid, id);
+          console.log('Purchase Check:', { userId: user.uid, assetId: id, purchased });
           setHasPurchased(purchased);
         }
       } catch (err) {
