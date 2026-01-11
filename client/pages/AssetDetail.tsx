@@ -185,10 +185,13 @@ export default function AssetDetail() {
 
         const newUserReview = await getUserReviewForAsset(id, user.uid);
         setUserReview(newUserReview);
-      }
 
-      setReviewMessage("");
-      setRating(5);
+        // Reload asset to get updated rating
+        const updatedAsset = await getAsset(id);
+        if (updatedAsset) {
+          setAsset(updatedAsset);
+        }
+      }
     } catch (error: any) {
       console.error("Error submitting review:", error);
       toast.error(error.message || "Failed to submit review");
