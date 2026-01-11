@@ -266,6 +266,23 @@ export default function Marketplace() {
           </main>
         </div>
       </div>
+
+      {/* Purchase Modal */}
+      {selectedAssetForPurchase && (
+        <PurchaseCheckoutModal
+          asset={selectedAssetForPurchase}
+          isOpen={showPurchaseModal}
+          onClose={() => {
+            setShowPurchaseModal(false);
+            setSelectedAssetForPurchase(null);
+          }}
+          onSuccess={(orderId) => {
+            setShowPurchaseModal(false);
+            setSelectedAssetForPurchase(null);
+            // Optionally navigate to order page or asset detail
+          }}
+        />
+      )}
     </div>
   );
 }
