@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Lock,
   Plus,
+  ShoppingBag,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { logoutUser } from "@/lib/auth";
