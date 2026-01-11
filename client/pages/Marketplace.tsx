@@ -38,6 +38,8 @@ const CATEGORIES = [
 ];
 
 export default function Marketplace() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [allAssets, setAllAssets] = useState<Asset[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<
@@ -46,6 +48,10 @@ export default function Marketplace() {
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [selectedAssetForPurchase, setSelectedAssetForPurchase] = useState<
+    Asset | null
+  >(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   // Fetch assets from Firebase
   useEffect(() => {
