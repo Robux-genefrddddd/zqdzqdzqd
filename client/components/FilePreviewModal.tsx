@@ -22,6 +22,8 @@ interface FilePreviewModalProps {
   onClose: () => void;
   onDownload: (selectedFiles: AssetFile[]) => Promise<void>;
   isDownloading?: boolean;
+  isPaid?: boolean;
+  hasPurchased?: boolean;
 }
 
 export function FilePreviewModal({
