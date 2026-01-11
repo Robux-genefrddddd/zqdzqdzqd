@@ -4,6 +4,11 @@ import { Download, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getBuyerOrders, type PaymentOrder } from "@/lib/paymentService";
 import { getAsset, type Asset } from "@/lib/assetService";
+import {
+  downloadAssetFile,
+  forceDownloadFile,
+  type AssetFile,
+} from "@/lib/fileService";
 import { Loader } from "@/components/ui/loader";
 import { FilePreviewModal } from "@/components/FilePreviewModal";
 import { toast } from "sonner";
