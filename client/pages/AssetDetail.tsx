@@ -795,7 +795,8 @@ export default function AssetDetail() {
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
         onSuccess={() => {
-          // After successful purchase, show file preview
+          // After successful purchase, mark as purchased and show file preview
+          setHasPurchased(true);
           setTimeout(() => {
             setShowFilePreview(true);
           }, 500);
