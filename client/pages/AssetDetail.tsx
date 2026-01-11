@@ -510,10 +510,11 @@ export default function AssetDetail() {
             >
               {asset.price &&
               asset.price > 0 &&
-              user?.uid !== asset.authorId ? (
+              user?.uid !== asset.authorId &&
+              !hasPurchased ? (
                 <>
                   <Lock size={14} />
-                  Get Access
+                  Get Access (${asset.price})
                 </>
               ) : (
                 <>
