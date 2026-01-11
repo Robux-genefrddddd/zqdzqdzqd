@@ -118,6 +118,10 @@ export default function AssetDetail() {
           // Check if favorited
           const fav = await isFavorited(user.uid, id);
           setIsFav(fav);
+
+          // Check if user has purchased the asset
+          const purchased = await hasUserPurchased(user.uid, id);
+          setHasPurchased(purchased);
         }
       } catch (err) {
         console.error("Error loading asset:", err);
