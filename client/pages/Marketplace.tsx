@@ -254,7 +254,11 @@ export default function Marketplace() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredAssets.map((asset) => (
-                    <AssetCard key={asset.id} asset={asset} />
+                    <AssetCard
+                      key={asset.id}
+                      asset={asset}
+                      onPurchaseClick={handlePurchaseClick}
+                    />
                   ))}
                 </div>
               </>
