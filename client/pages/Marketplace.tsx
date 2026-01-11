@@ -69,6 +69,17 @@ export default function Marketplace() {
     fetchAssets();
   }, [selectedCategory]);
 
+  const handlePurchaseClick = (asset: Asset) => {
+    if (!user) {
+      toast.error("Please sign in to purchase assets");
+      navigate("/login");
+      return;
+    }
+
+    setSelectedAssetForPurchase(asset);
+    setShowPurchaseModal(true);
+  };
+
   // Filter and sort assets
   const filteredAssets = allAssets
     .filter((asset) => {
