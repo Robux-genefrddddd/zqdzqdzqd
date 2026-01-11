@@ -315,6 +315,16 @@ export default function AssetDetail() {
       return;
     }
 
+    // Security check: Verify user has access to download this asset
+    const isPaidAsset = asset.price && asset.price > 0;
+    const isAuthor = user && user.uid === asset.authorId;
+    const hasAccess = isAuthor || !isPaidAsset || hasPurchased;
+
+    if (!hasAccess) {
+      toast.error("You don't have access to download this asset. Please purchase it first.");
+      return;
+    }
+
     setDownloading(true);
 
     try {
