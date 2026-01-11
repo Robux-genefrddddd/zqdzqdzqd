@@ -289,9 +289,19 @@ export default function AssetDetail() {
     if (!asset) return;
 
     // Check if asset is paid and user hasn't purchased it
-    const isPaidAsset = asset.price && asset.price > 0;
+    const isPaidAsset = asset.price !== null && asset.price !== undefined && asset.price > 0;
     const isAuthor = user && user.uid === asset.authorId;
     const canDownload = isAuthor || !isPaidAsset || hasPurchased;
+
+    console.log('Download Handler:', {
+      isPaidAsset,
+      isAuthor,
+      hasPurchased,
+      canDownload,
+      userId: user?.uid,
+      authorId: asset.authorId,
+      price: asset.price
+    });
 
     if (isPaidAsset && !isAuthor && !hasPurchased) {
       // Show purchase modal for paid assets not purchased
