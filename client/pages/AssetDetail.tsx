@@ -121,7 +121,11 @@ export default function AssetDetail() {
 
           // Check if user has purchased the asset
           const purchased = await hasUserPurchased(user.uid, id);
-          console.log('Purchase Check:', { userId: user.uid, assetId: id, purchased });
+          console.log("Purchase Check:", {
+            userId: user.uid,
+            assetId: id,
+            purchased,
+          });
           setHasPurchased(purchased);
         }
       } catch (err) {
@@ -290,18 +294,19 @@ export default function AssetDetail() {
     if (!asset) return;
 
     // Check if asset is paid and user hasn't purchased it
-    const isPaidAsset = asset.price !== null && asset.price !== undefined && asset.price > 0;
+    const isPaidAsset =
+      asset.price !== null && asset.price !== undefined && asset.price > 0;
     const isAuthor = user && user.uid === asset.authorId;
     const canDownload = isAuthor || !isPaidAsset || hasPurchased;
 
-    console.log('Download Handler:', {
+    console.log("Download Handler:", {
       isPaidAsset,
       isAuthor,
       hasPurchased,
       canDownload,
       userId: user?.uid,
       authorId: asset.authorId,
-      price: asset.price
+      price: asset.price,
     });
 
     if (isPaidAsset && !isAuthor && !hasPurchased) {
@@ -515,13 +520,23 @@ export default function AssetDetail() {
 
             {/* Primary Download Button */}
             {(() => {
-              const isPaidAsset = asset.price !== null && asset.price !== undefined && asset.price > 0;
+              const isPaidAsset =
+                asset.price !== null &&
+                asset.price !== undefined &&
+                asset.price > 0;
               const isAuthor = user?.uid === asset.authorId;
               const userHasPurchased = hasPurchased;
-              const needsPayment = isPaidAsset && !isAuthor && !userHasPurchased;
+              const needsPayment =
+                isPaidAsset && !isAuthor && !userHasPurchased;
 
               // Debug log
-              console.log('Button Logic:', { isPaidAsset, isAuthor, userHasPurchased, needsPayment, price: asset.price });
+              console.log("Button Logic:", {
+                isPaidAsset,
+                isAuthor,
+                userHasPurchased,
+                needsPayment,
+                price: asset.price,
+              });
 
               return (
                 <button
