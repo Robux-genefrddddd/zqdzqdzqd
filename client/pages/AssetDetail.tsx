@@ -518,41 +518,33 @@ export default function AssetDetail() {
               </div>
             </div>
 
-            {/* Primary Download Button */}
+            {/* Primary Download Button - Matches AssetCard styling */}
             {(() => {
-              const isPaidAsset =
-                asset.price !== null &&
-                asset.price !== undefined &&
-                asset.price > 0;
+              const isFree = !asset.price || asset.price === 0;
+              const isPaidAsset = asset.price && asset.price > 0;
               const isAuthor = user?.uid === asset.authorId;
               const userHasPurchased = hasPurchased;
-              const needsPayment =
-                isPaidAsset && !isAuthor && !userHasPurchased;
-
-              // Debug log
-              console.log("Button Logic:", {
-                isPaidAsset,
-                isAuthor,
-                userHasPurchased,
-                needsPayment,
-                price: asset.price,
-              });
+              const needsPayment = isPaidAsset && !isAuthor && !userHasPurchased;
 
               return (
                 <button
                   onClick={handleDownloadAsset}
                   disabled={downloading || loading}
-                  className="w-full py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-auto"
+                  className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded font-medium transition-all duration-200 text-xs mt-auto ${
+                    isFree
+                      ? "bg-accent/10 text-accent border border-accent/20 hover:bg-accent/15 hover:border-accent/30"
+                      : "bg-primary text-primary-foreground hover:bg-primary/90 border border-primary"
+                  }`}
                 >
                   {needsPayment ? (
                     <>
                       <Lock size={14} />
-                      Get Access (${asset.price?.toFixed(2)})
+                      Get Access
                     </>
-                  ) : isPaidAsset ? (
+                  ) : isFree ? (
                     <>
-                      <FileDown size={14} />
-                      {downloading ? "Downloading..." : "Download (Your Asset)"}
+                      <Download size={14} />
+                      Download
                     </>
                   ) : (
                     <>
