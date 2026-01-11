@@ -94,7 +94,7 @@ export function AssetCard({ asset, onPurchaseClick }: AssetCardProps) {
 
             {/* Action Button */}
             <button
-              onClick={isFree ? handleDownload : (e) => e.preventDefault()}
+              onClick={handleAction}
               className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg font-medium transition-all duration-200 text-xs ${
                 isFree
                   ? "bg-white/8 border border-white/10 text-foreground/80 hover:bg-white/12 hover:border-white/15"
