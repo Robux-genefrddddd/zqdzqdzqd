@@ -512,7 +512,7 @@ export function NavBar() {
                                 : "Admin"}
                             </p>
                             <motion.div
-                              custom={7}
+                              custom={8}
                               initial="hidden"
                               animate="visible"
                               variants={menuItemVariants}
