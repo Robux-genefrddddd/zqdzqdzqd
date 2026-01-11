@@ -288,21 +288,24 @@ export default function AssetDetail() {
   const handleDownloadAsset = () => {
     if (!asset) return;
 
-    // Check if asset is paid and user is not the author
+    // Check if asset is paid and user hasn't purchased it
     const isPaidAsset = asset.price && asset.price > 0;
     const isAuthor = user && user.uid === asset.authorId;
+    const canDownload = isAuthor || !isPaidAsset || hasPurchased;
 
-    if (isPaidAsset && !isAuthor) {
-      // Show purchase modal for paid assets
+    if (isPaidAsset && !isAuthor && !hasPurchased) {
+      // Show purchase modal for paid assets not purchased
       if (!user) {
         toast.error("Please sign in to purchase this asset");
         navigate("/login");
         return;
       }
       setShowPurchaseModal(true);
-    } else {
-      // Show file preview for free assets or author's own assets
+    } else if (canDownload) {
+      // Show file preview for free assets, author's own assets, or purchased assets
       setShowFilePreview(true);
+    } else {
+      toast.error("Unable to download asset");
     }
   };
 
