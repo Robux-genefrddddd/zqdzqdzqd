@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AssetCard } from "@/components/AssetCard";
+import { PurchaseCheckoutModal } from "@/components/PurchaseCheckoutModal";
 import {
   Search,
   X,
@@ -13,6 +15,8 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { getPublishedAssets, type Asset } from "@/lib/assetService";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
