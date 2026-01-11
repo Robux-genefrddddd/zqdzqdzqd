@@ -157,7 +157,9 @@ export function PurchaseCheckoutModal({
               }
 
               const result = await response.json();
-              toast.success("Payment successful! You can now download the asset.");
+              toast.success(
+                "Payment successful! You can now download the asset.",
+              );
 
               onSuccess(result.orderId);
               onClose();

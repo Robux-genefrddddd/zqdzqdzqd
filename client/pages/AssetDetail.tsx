@@ -321,7 +321,9 @@ export default function AssetDetail() {
     const hasAccess = isAuthor || !isPaidAsset || hasPurchased;
 
     if (!hasAccess) {
-      toast.error("You don't have access to download this asset. Please purchase it first.");
+      toast.error(
+        "You don't have access to download this asset. Please purchase it first.",
+      );
       return;
     }
 
@@ -518,7 +520,8 @@ export default function AssetDetail() {
               const isPaidAsset = asset.price && asset.price > 0;
               const isAuthor = user?.uid === asset.authorId;
               const userHasPurchased = hasPurchased;
-              const needsPayment = isPaidAsset && !isAuthor && !userHasPurchased;
+              const needsPayment =
+                isPaidAsset && !isAuthor && !userHasPurchased;
 
               return (
                 <button
