@@ -723,6 +723,19 @@ export default function AssetDetail() {
         onDownload={handleDownloadSelectedFiles}
         isDownloading={downloading}
       />
+
+      {/* Purchase Checkout Modal */}
+      <PurchaseCheckoutModal
+        asset={asset}
+        isOpen={showPurchaseModal}
+        onClose={() => setShowPurchaseModal(false)}
+        onSuccess={() => {
+          // After successful purchase, show file preview
+          setTimeout(() => {
+            setShowFilePreview(true);
+          }, 500);
+        }}
+      />
     </div>
   );
 }
