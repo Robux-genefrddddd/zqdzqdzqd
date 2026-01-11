@@ -170,12 +170,32 @@ export async function updateReview(
   message: string,
 ): Promise<void> {
   try {
-    const docRef = doc(db, REVIEWS_COLLECTION, reviewId);
-    await updateDoc(docRef, {
+    const reviewRef = doc(db, REVIEWS_COLLECTION, reviewId);
+    const reviewSnap = await getDocs(
+      query(collection(db, REVIEWS_COLLECTION), where("__name__", "==", reviewId)),
+    );
+
+    let assetId = "";
+    if (reviewSnap.docs.length > 0) {
+      assetId = reviewSnap.docs[0].data().assetId;
+    } else {
+      // Fallback: get the review document directly
+      const reviewDoc = await getDoc(reviewRef);
+      if (reviewDoc.exists()) {
+        assetId = reviewDoc.data().assetId;
+      }
+    }
+
+    await updateDoc(reviewRef, {
       rating,
       message,
       createdAt: Timestamp.now(),
     });
+
+    // Recalculate asset rating
+    if (assetId) {
+      await recalculateAssetRating(assetId);
+    }
   } catch (error) {
     console.error("Error updating review:", error);
     throw error;
