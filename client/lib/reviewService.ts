@@ -173,7 +173,10 @@ export async function updateReview(
   try {
     const reviewRef = doc(db, REVIEWS_COLLECTION, reviewId);
     const reviewSnap = await getDocs(
-      query(collection(db, REVIEWS_COLLECTION), where("__name__", "==", reviewId)),
+      query(
+        collection(db, REVIEWS_COLLECTION),
+        where("__name__", "==", reviewId),
+      ),
     );
 
     let assetId = "";

@@ -153,9 +153,7 @@ export function PurchaseCheckoutModal({
 
               if (!response.ok) {
                 const errData = await response.json();
-                throw new Error(
-                  errData.message || "Failed to capture payment",
-                );
+                throw new Error(errData.message || "Failed to capture payment");
               }
 
               const result = await response.json();

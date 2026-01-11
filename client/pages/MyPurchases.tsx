@@ -35,7 +35,7 @@ export default function MyPurchases() {
 
         // Filter only completed orders
         const completedOrders = buyerOrders.filter(
-          (order) => order.status === "completed"
+          (order) => order.status === "completed",
         );
 
         setOrders(completedOrders);
@@ -49,10 +49,7 @@ export default function MyPurchases() {
               assets.set(order.productId, asset);
             }
           } catch (err) {
-            console.error(
-              `Failed to fetch asset ${order.productId}:`,
-              err
-            );
+            console.error(`Failed to fetch asset ${order.productId}:`, err);
           }
         }
         setAssetMap(assets);
@@ -103,13 +100,16 @@ export default function MyPurchases() {
 
         {orders.length === 0 ? (
           <div className="border border-border/20 rounded-lg p-16 text-center space-y-4 bg-secondary/10">
-            <ShoppingCart size={48} className="mx-auto text-muted-foreground/40" />
+            <ShoppingCart
+              size={48}
+              className="mx-auto text-muted-foreground/40"
+            />
             <h2 className="text-xl font-semibold text-foreground">
               No purchases yet
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Start exploring our marketplace and purchase assets to get lifetime
-              access
+              Start exploring our marketplace and purchase assets to get
+              lifetime access
             </p>
             <button
               onClick={() => navigate("/marketplace")}
@@ -135,7 +135,8 @@ export default function MyPurchases() {
                   Total Spent
                 </p>
                 <p className="text-2xl font-bold text-foreground">
-                  ${orders
+                  $
+                  {orders
                     .reduce((sum, o) => sum + (o.totalAmount || 0), 0)
                     .toFixed(2)}
                 </p>
@@ -184,7 +185,7 @@ export default function MyPurchases() {
                             year: "numeric",
                             month: "short",
                             day: "numeric",
-                          }
+                          },
                         )}
                       </p>
                       <p className="text-xs text-muted-foreground/70 mt-0.5">
@@ -222,9 +223,7 @@ export default function MyPurchases() {
       {selectedAssetId && (
         <FilePreviewModal
           assetId={selectedAssetId}
-          assetName={
-            assetMap.get(selectedAssetId)?.name || "Asset"
-          }
+          assetName={assetMap.get(selectedAssetId)?.name || "Asset"}
           isOpen={showPreview}
           onClose={() => setShowPreview(false)}
           onDownload={async (selectedFiles: AssetFile[]) => {
@@ -233,22 +232,17 @@ export default function MyPurchases() {
               try {
                 const blob = await downloadAssetFile(
                   fileData.path,
-                  fileData.name
+                  fileData.name,
                 );
                 forceDownloadFile(blob, fileData.name);
-                await new Promise((resolve) =>
-                  setTimeout(resolve, 500)
-                );
+                await new Promise((resolve) => setTimeout(resolve, 500));
               } catch (err: any) {
                 toast.error(
-                  err?.message ||
-                  `Failed to download ${fileData.name}`
+                  err?.message || `Failed to download ${fileData.name}`,
                 );
               }
             }
-            toast.success(
-              `${selectedFiles.length} file(s) downloaded`
-            );
+            toast.success(`${selectedFiles.length} file(s) downloaded`);
             setShowPreview(false);
           }}
         />

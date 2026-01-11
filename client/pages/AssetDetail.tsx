@@ -492,7 +492,9 @@ export default function AssetDetail() {
               disabled={downloading || loading}
               className="w-full py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-auto"
             >
-              {asset.price && asset.price > 0 && user?.uid !== asset.authorId ? (
+              {asset.price &&
+              asset.price > 0 &&
+              user?.uid !== asset.authorId ? (
                 <>
                   <Lock size={14} />
                   Get Access

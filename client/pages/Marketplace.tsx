@@ -48,9 +48,8 @@ export default function Marketplace() {
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [selectedAssetForPurchase, setSelectedAssetForPurchase] = useState<
-    Asset | null
-  >(null);
+  const [selectedAssetForPurchase, setSelectedAssetForPurchase] =
+    useState<Asset | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   // Fetch assets from Firebase
