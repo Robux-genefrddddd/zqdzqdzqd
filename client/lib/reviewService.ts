@@ -22,6 +22,41 @@ export interface Review {
 }
 
 const REVIEWS_COLLECTION = "asset_reviews";
+const ASSETS_COLLECTION = "assets";
+
+/**
+ * Calculate average rating and review count for an asset
+ */
+async function recalculateAssetRating(assetId: string): Promise<void> {
+  try {
+    const q = query(
+      collection(db, REVIEWS_COLLECTION),
+      where("assetId", "==", assetId),
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.docs.length === 0) {
+      // No reviews, set rating to 0
+      await updateDoc(doc(db, ASSETS_COLLECTION, assetId), {
+        rating: 0,
+        reviews: 0,
+      });
+      return;
+    }
+
+    const reviews = querySnapshot.docs.map((doc) => doc.data());
+    const averageRating =
+      reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length;
+
+    // Update asset with new rating and review count
+    await updateDoc(doc(db, ASSETS_COLLECTION, assetId), {
+      rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+      reviews: reviews.length,
+    });
+  } catch (error) {
+    console.error("Error recalculating asset rating:", error);
+  }
+}
 
 // Get all reviews for an asset
 export async function getAssetReviews(assetId: string): Promise<Review[]> {
