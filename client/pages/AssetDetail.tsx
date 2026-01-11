@@ -503,26 +503,31 @@ export default function AssetDetail() {
             </div>
 
             {/* Primary Download Button */}
-            <button
-              onClick={handleDownloadAsset}
-              disabled={downloading || loading}
-              className="w-full py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-auto"
-            >
-              {asset.price &&
-              asset.price > 0 &&
-              user?.uid !== asset.authorId &&
-              !hasPurchased ? (
-                <>
-                  <Lock size={14} />
-                  Get Access (${asset.price})
-                </>
-              ) : (
-                <>
-                  <FileDown size={14} />
-                  {downloading ? "Downloading..." : "Download"}
-                </>
-              )}
-            </button>
+            {(() => {
+              const isPaidAsset = asset.price && asset.price > 0;
+              const isAuthor = user?.uid === asset.authorId;
+              const needsPayment = isPaidAsset && !isAuthor && !hasPurchased;
+
+              return (
+                <button
+                  onClick={handleDownloadAsset}
+                  disabled={downloading || loading}
+                  className="w-full py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-auto"
+                >
+                  {needsPayment ? (
+                    <>
+                      <Lock size={14} />
+                      Get Access (${asset.price})
+                    </>
+                  ) : (
+                    <>
+                      <FileDown size={14} />
+                      {downloading ? "Downloading..." : "Download"}
+                    </>
+                  )}
+                </button>
+              );
+            })()}
 
             {/* Creator Preview */}
             {authorProfile && (
