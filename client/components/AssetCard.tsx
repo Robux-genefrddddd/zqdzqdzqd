@@ -4,17 +4,23 @@ import type { Asset } from "@/lib/assetService";
 
 interface AssetCardProps {
   asset: Asset;
+  onPurchaseClick?: (asset: Asset) => void;
 }
 
-export function AssetCard({ asset }: AssetCardProps) {
+export function AssetCard({ asset, onPurchaseClick }: AssetCardProps) {
   const isFree = asset.price === null || asset.price === 0;
 
-  const handleDownload = (e: React.MouseEvent) => {
+  const handleAction = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Navigate to asset detail page where preview modal will open
-    window.location.href = `/asset/${asset.id}?preview=true`;
+    if (!isFree && onPurchaseClick) {
+      // For paid assets, trigger purchase modal
+      onPurchaseClick(asset);
+    } else {
+      // For free assets, navigate to detail page with preview
+      window.location.href = `/asset/${asset.id}?preview=true`;
+    }
   };
 
   return (
@@ -88,7 +94,7 @@ export function AssetCard({ asset }: AssetCardProps) {
 
             {/* Action Button */}
             <button
-              onClick={isFree ? handleDownload : (e) => e.preventDefault()}
+              onClick={handleAction}
               className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg font-medium transition-all duration-200 text-xs ${
                 isFree
                   ? "bg-white/8 border border-white/10 text-foreground/80 hover:bg-white/12 hover:border-white/15"

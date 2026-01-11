@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Lock,
   Plus,
+  ShoppingBag,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { logoutUser } from "@/lib/auth";
@@ -167,6 +168,12 @@ export function NavBar() {
                           {unreadCount > 9 ? "9+" : unreadCount}
                         </span>
                       )}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/purchases" className="cursor-pointer">
+                      <ShoppingBag size={16} className="mr-2" />
+                      My Purchases
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
@@ -467,6 +474,26 @@ export function NavBar() {
                                 )}
                               </Link>
                             </motion.div>
+                            <motion.div
+                              custom={7}
+                              initial="hidden"
+                              animate="visible"
+                              variants={menuItemVariants}
+                            >
+                              <Link
+                                to="/purchases"
+                                className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-foreground hover:text-primary hover:bg-white/5 transition-colors duration-150 group"
+                                onClick={closeMenu}
+                              >
+                                <ShoppingBag
+                                  size={16}
+                                  className="text-muted-foreground group-hover:text-primary flex-shrink-0"
+                                />
+                                <span className="font-medium">
+                                  My Purchases
+                                </span>
+                              </Link>
+                            </motion.div>
                           </div>
                         </motion.div>
 
@@ -485,7 +512,7 @@ export function NavBar() {
                                 : "Admin"}
                             </p>
                             <motion.div
-                              custom={7}
+                              custom={8}
                               initial="hidden"
                               animate="visible"
                               variants={menuItemVariants}

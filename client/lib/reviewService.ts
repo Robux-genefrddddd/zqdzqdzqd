@@ -9,6 +9,7 @@ import {
   doc,
   Timestamp,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 
 export interface Review {
@@ -22,6 +23,41 @@ export interface Review {
 }
 
 const REVIEWS_COLLECTION = "asset_reviews";
+const ASSETS_COLLECTION = "assets";
+
+/**
+ * Calculate average rating and review count for an asset
+ */
+async function recalculateAssetRating(assetId: string): Promise<void> {
+  try {
+    const q = query(
+      collection(db, REVIEWS_COLLECTION),
+      where("assetId", "==", assetId),
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.docs.length === 0) {
+      // No reviews, set rating to 0
+      await updateDoc(doc(db, ASSETS_COLLECTION, assetId), {
+        rating: 0,
+        reviews: 0,
+      });
+      return;
+    }
+
+    const reviews = querySnapshot.docs.map((doc) => doc.data());
+    const averageRating =
+      reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length;
+
+    // Update asset with new rating and review count
+    await updateDoc(doc(db, ASSETS_COLLECTION, assetId), {
+      rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+      reviews: reviews.length,
+    });
+  } catch (error) {
+    console.error("Error recalculating asset rating:", error);
+  }
+}
 
 // Get all reviews for an asset
 export async function getAssetReviews(assetId: string): Promise<Review[]> {
@@ -118,6 +154,9 @@ export async function createReview(
       createdAt: Timestamp.now(),
     });
 
+    // Recalculate asset rating
+    await recalculateAssetRating(assetId);
+
     return docRef.id;
   } catch (error) {
     console.error("Error creating review:", error);
@@ -132,12 +171,35 @@ export async function updateReview(
   message: string,
 ): Promise<void> {
   try {
-    const docRef = doc(db, REVIEWS_COLLECTION, reviewId);
-    await updateDoc(docRef, {
+    const reviewRef = doc(db, REVIEWS_COLLECTION, reviewId);
+    const reviewSnap = await getDocs(
+      query(
+        collection(db, REVIEWS_COLLECTION),
+        where("__name__", "==", reviewId),
+      ),
+    );
+
+    let assetId = "";
+    if (reviewSnap.docs.length > 0) {
+      assetId = reviewSnap.docs[0].data().assetId;
+    } else {
+      // Fallback: get the review document directly
+      const reviewDoc = await getDoc(reviewRef);
+      if (reviewDoc.exists()) {
+        assetId = reviewDoc.data().assetId;
+      }
+    }
+
+    await updateDoc(reviewRef, {
       rating,
       message,
       createdAt: Timestamp.now(),
     });
+
+    // Recalculate asset rating
+    if (assetId) {
+      await recalculateAssetRating(assetId);
+    }
   } catch (error) {
     console.error("Error updating review:", error);
     throw error;
@@ -148,7 +210,19 @@ export async function updateReview(
 export async function deleteReview(reviewId: string): Promise<void> {
   try {
     const docRef = doc(db, REVIEWS_COLLECTION, reviewId);
+    const reviewDoc = await getDoc(docRef);
+
+    let assetId = "";
+    if (reviewDoc.exists()) {
+      assetId = reviewDoc.data().assetId;
+    }
+
     await deleteDoc(docRef);
+
+    // Recalculate asset rating
+    if (assetId) {
+      await recalculateAssetRating(assetId);
+    }
   } catch (error) {
     console.error("Error deleting review:", error);
     throw error;

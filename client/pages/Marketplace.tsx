@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AssetCard } from "@/components/AssetCard";
+import { PurchaseCheckoutModal } from "@/components/PurchaseCheckoutModal";
 import {
   Search,
   X,
@@ -13,6 +15,8 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { getPublishedAssets, type Asset } from "@/lib/assetService";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -34,6 +38,8 @@ const CATEGORIES = [
 ];
 
 export default function Marketplace() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [allAssets, setAllAssets] = useState<Asset[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<
@@ -42,6 +48,9 @@ export default function Marketplace() {
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [selectedAssetForPurchase, setSelectedAssetForPurchase] =
+    useState<Asset | null>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   // Fetch assets from Firebase
   useEffect(() => {
@@ -58,6 +67,17 @@ export default function Marketplace() {
 
     fetchAssets();
   }, [selectedCategory]);
+
+  const handlePurchaseClick = (asset: Asset) => {
+    if (!user) {
+      toast.error("Please sign in to purchase assets");
+      navigate("/login");
+      return;
+    }
+
+    setSelectedAssetForPurchase(asset);
+    setShowPurchaseModal(true);
+  };
 
   // Filter and sort assets
   const filteredAssets = allAssets
@@ -233,7 +253,11 @@ export default function Marketplace() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredAssets.map((asset) => (
-                    <AssetCard key={asset.id} asset={asset} />
+                    <AssetCard
+                      key={asset.id}
+                      asset={asset}
+                      onPurchaseClick={handlePurchaseClick}
+                    />
                   ))}
                 </div>
               </>
@@ -241,6 +265,23 @@ export default function Marketplace() {
           </main>
         </div>
       </div>
+
+      {/* Purchase Modal */}
+      {selectedAssetForPurchase && (
+        <PurchaseCheckoutModal
+          asset={selectedAssetForPurchase}
+          isOpen={showPurchaseModal}
+          onClose={() => {
+            setShowPurchaseModal(false);
+            setSelectedAssetForPurchase(null);
+          }}
+          onSuccess={(orderId) => {
+            setShowPurchaseModal(false);
+            setSelectedAssetForPurchase(null);
+            // Optionally navigate to order page or asset detail
+          }}
+        />
+      )}
     </div>
   );
 }
