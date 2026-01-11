@@ -171,6 +171,12 @@ export function NavBar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
+                    <Link to="/purchases" className="cursor-pointer">
+                      <ShoppingBag size={16} className="mr-2" />
+                      My Purchases
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <Link
                       to="/support"
                       className="cursor-pointer flex items-center justify-between"
