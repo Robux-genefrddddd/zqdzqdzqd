@@ -14,6 +14,7 @@ import {
   FileDown,
   Copy,
   MoreVertical,
+  Lock,
 } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import {
@@ -55,6 +56,7 @@ import {
   removeFavorite,
 } from "@/lib/favoritesService";
 import { FilePreviewModal } from "@/components/FilePreviewModal";
+import { PurchaseCheckoutModal } from "@/components/PurchaseCheckoutModal";
 import { toast } from "sonner";
 import type { Asset } from "@/lib/assetService";
 
